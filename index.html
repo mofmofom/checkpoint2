@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>応募フォーム</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+      liff.init({ liffId: "2005918940-R2l0DEod" })
+        .then(() => {
+          if (liff.isLoggedIn()) {
+            alert("LIFF is logged in.");  // デバッグ用アラート
+            liff.getProfile()
+              .then(profile => {
+                const username = profile.displayName;
+                const userId = profile.userId;
+                alert("Profile obtained: " + username + ", " + userId);  // デバッグ用アラート
+                document.getElementById('userId').value = userId; 
+                document.getElementById('userName').value = username; 
+                document.getElementById('submitBtn').disabled = false; // ボタンを有効化
+              })
+              .catch(err => {
+                alert('Error getting profile: ' + JSON.stringify(err)); // エラー用アラート
+              });
+          } else {
+            alert("LIFF is not logged in. Redirecting to login.");  // デバッグ用アラート
+            liff.login();
+          }
+        })
+        .catch((err) => {
+          alert('LIFF Initialization failed: ' + JSON.stringify(err)); // エラー用アラート
+        });
+    });
+  </script>
+</head>
+
+<body>
+  <h1>応募フォーム</h1>
+  <h2>テスト８</h2>
+  <form id="applicationForm">
+    <input type="hidden" id="userId" name="userId">
+    <input type="hidden" id="userName" name="userName">
+
+    <label for="companyName">応募先企業名:</label>
+    <input type="text" id="companyName" name="companyName" required><br><br>
+
+    <label for="applicantName">お名前:</label>
+    <input type="text" id="applicantName" name="applicantName" required><br><br>
+
+    <label for="email">メールアドレス:</label>
+    <input type="email" id="email" name="email" required><br><br>
+
+    <label for="message">メッセージ:</label><br>
+    <textarea id="message" name="message" rows="5" cols="40"></textarea><br><br>
+
+    <input type="button" id="submitBtn" value="送信" onclick="submitForm()">
+  </form>
+
+  <script>
+    function submitForm() {
+      const formData = {
+        userId: document.getElementById('userId').value,
+        userName: document.getElementById('userName').value,
+        companyName: document.getElementById('companyName').value,
+        applicantName: document.getElementById('applicantName').value,
+        email: document.getElementById('email').value,
+        message: document.getElementById('message').value
+      };
+
+      google.script.run.withSuccessHandler(onSuccess).processForm(formData);
+    }
+
+    function onSuccess(response) {
+      alert('フォームが送信されました。ありがとうございます！');
+      document.getElementById('applicationForm').reset();
+      document.getElementById('submitBtn').disabled = true; // 送信後ボタンを再度無効化
+    }
+
+  </script>
+</body>
+</html>
